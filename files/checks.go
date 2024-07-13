@@ -25,3 +25,13 @@ func IsFile(file string) bool {
 
 	return !stat.IsDir()
 }
+
+/*
+description: checks if the file is a directory
+arguments:
+	- file: the string path to check
+return: a boolean that indicates whether the directory is a dir or not
+*/
+func IsDir(file string) bool {
+	return !IsFile(file)
+}
