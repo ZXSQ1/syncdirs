@@ -2,6 +2,7 @@ package files
 
 import (
 	"os"
+	"path/filepath"
 )
 
 /*
@@ -15,6 +16,10 @@ return:
 func GetFile(path string) (*os.File, error) {
 	var file *os.File
 	var err error = nil
+
+	if !IsExist(filepath.Dir(path)) {
+		os.MkdirAll(filepath.Dir(path), 0644)
+	}
 
 	if IsExist(path) {
 		file, err = os.Open(path)
