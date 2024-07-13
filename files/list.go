@@ -9,11 +9,13 @@ import (
 description: lists the files in a directory recursively
 arguments:
 	- directory: the path of the directory to list the files of
+	- trimBase: will trim the directory path out of the paths if specified
+		- ex. temp/main/thing --> main/thing
 return:
 	- []string: a string slice containing the paths
 	- error: an error if there is any
 */
-func ListDir(directory string) ([]string, error) {
+func ListDir(directory string, trimBase bool) ([]string, error) {
 	var result []string
 	var err error = nil
 
@@ -29,10 +31,16 @@ func ListDir(directory string) ([]string, error) {
 		entryPath := directory + "/" + entry.Name()
 
 		if IsDir(entryPath) {
-			recursiveEntries, _ := ListDir(entryPath)
+			recursiveEntries, _ := ListDir(entryPath, false)
 			result = append(result, recursiveEntries...)
 		} else {
 			result = append(result, entryPath)
+		}
+	}
+
+	if trimBase {
+		for index, path := range result {
+			result[index] = path[len(directory) + 1:]
 		}
 	}
 

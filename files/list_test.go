@@ -24,10 +24,26 @@ func TestListDir(t *testing.T) {
 		fileObj.Close()
 	}
 
-	entries, err := ListDir(tempDir)
+	entries, err := ListDir(tempDir, false)
 
 	if err != nil {
 		t.Fail()
+	}
+
+	for _, entry := range entries {
+		if !slices.Contains(pathsToCreate, entry) {
+			t.Fail()
+		}
+	}
+
+	entries, err = ListDir(tempDir, true)
+
+	if err != nil {
+		t.Fail()
+	}
+
+	for index, pathToCreate := range pathsToCreate {
+		pathsToCreate[index] = pathToCreate[len(tempDir) + 1:]
 	}
 
 	for _, entry := range entries {
