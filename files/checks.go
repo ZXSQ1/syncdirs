@@ -13,3 +13,15 @@ func IsExist(file string) bool {
 
 	return !os.IsNotExist(err)
 }
+
+/*
+description: checks if the file is a file
+arguments:
+	- file: the string path to check
+return: a boolean that indicates whether the file is a file or not
+*/
+func IsFile(file string) bool {
+	stat, _ := os.Stat(file)
+
+	return !stat.IsDir()
+}
