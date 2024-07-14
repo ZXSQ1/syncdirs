@@ -2,6 +2,7 @@
 MAIN = main.go
 BIN = syncdirs
 COMPILE = go build
+TEST = go test
 
 build:
 	GOOS=windows GOARCH=amd64 $(COMPILE) -o bin/$(BIN)-windows-amd64.exe $(MAIN)
@@ -26,6 +27,10 @@ build:
 	GOOS=freebsd GOARCH=amd64 $(COMPILE) -o bin/$(BIN)-freebsd-amd64 $(MAIN)
 	GOOS=freebsd GOARCH=arm $(COMPILE) -o bin/$(BIN)-freebsd-arm $(MAIN)
 	GOOS=freebsd GOARCH=386 $(COMPILE) -o bin/$(BIN)-freebsd-386 $(MAIN)
+
+test:
+	$(TEST) files/*
+	$(TEST) sync/*
 
 clean:
 	rm -rf bin/*
