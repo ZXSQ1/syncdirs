@@ -20,7 +20,7 @@ func Differ(tableA, tableB *DifferenceTable) {
 		onlyTableB = 2
 	)
 
-	var fullTable map[string]int
+	var fullTable = map[string]int{}
 
 	for _, entry := range tableA.Entries {
 		fullTable[entry] = onlyTableA
