@@ -41,3 +41,34 @@ func Synchronize(dirA, dirB string) {
 
 	waitGroup.Wait()
 }
+
+
+/*
+description: synchronizes multiple directories
+arguments:
+	- dirs: the string slice containing the directories
+return: no return
+*/
+func SynchronizeMultiple(dirs []string) {
+	switch len(dirs) {
+	case 0, 1:
+		return
+	case 2:
+		Synchronize(dirs[0], dirs[1])
+		return
+	}
+
+	centralDir := dirs[0]
+	waitGroup := &sync.WaitGroup{}
+
+	for _, dir := range dirs[1:] {
+		waitGroup.Add(1)
+
+		go func() {
+			Synchronize(centralDir, dir)
+			waitGroup.Done()
+		}()
+	}
+
+	waitGroup.Wait()
+}
