@@ -1,9 +1,14 @@
 package ui
 
 import (
-	_ "github.com/charmbracelet/bubbletea"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 type Model struct {
+	currentFile string
+	progress float32
+}
+
+func (m Model) Init() tea.Cmd {
 	
 }
