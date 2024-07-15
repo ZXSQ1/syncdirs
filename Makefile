@@ -31,6 +31,7 @@ build:
 test:
 	$(TEST) files/*
 	$(TEST) sync/*
+	$(TEST) utils/*
 
 clean:
 	rm -rf bin/*
