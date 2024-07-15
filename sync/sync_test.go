@@ -45,7 +45,8 @@ func TestSynchronize(t *testing.T) {
 		os.MkdirAll(path, 0644)
 	}
 
-	Synchronize(pathDirA, pathDirB)
+	currentFile, errChan := make(chan string), make(chan string)
+	Synchronize(pathDirA, pathDirB, currentFile, errChan)
 
 	contentsDirA, _ := files.ListDir(pathDirA, true)
 	contentsDirB, _ := files.ListDir(pathDirB, true)

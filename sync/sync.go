@@ -12,9 +12,11 @@ description: synchronizes 2 directories
 arguments:
 	- dirA: the string path to the first directory
 	- dirB: the string path to the second directory
+	- currentFile: the string channel where the currentFile is signaled
+	- errChan: the string channel to signal error texts
 return: no return
 */
-func Synchronize(dirA, dirB string) {
+func Synchronize(dirA, dirB string, currentFile, errChan chan string) {
 	var waitGroup = &sync.WaitGroup{}
 
 	source := make(chan string)
@@ -38,14 +40,17 @@ func Synchronize(dirA, dirB string) {
 			err := files.Copy(sourcePath, destPath)
 
 			if err != nil {
-				utils.PrintError("copy operation file: %s failed", sourcePath)
+				errChan<-utils.Error("copy operation failed")
 			}
-			
+
+			currentFile<-sourcePath
 			waitGroup.Done()
 		}()
 	}
 
 	waitGroup.Wait()
+	close(currentFile)
+	close(errChan)
 }
 
 
@@ -53,14 +58,16 @@ func Synchronize(dirA, dirB string) {
 description: synchronizes multiple directories
 arguments:
 	- dirs: the string slice containing the directories
+	- currentFile: the string channel to carry the currentFile
+	- errChan: the string channel that holds the error text
 return: no return
 */
-func SynchronizeMultiple(dirs []string) {
+func SynchronizeMultiple(dirs []string, currentFile, errChan chan string) {
 	switch len(dirs) {
 	case 0, 1:
 		return
 	case 2:
-		Synchronize(dirs[0], dirs[1])
+		Synchronize(dirs[0], dirs[1], currentFile, errChan)
 		return
 	}
 
@@ -71,7 +78,7 @@ func SynchronizeMultiple(dirs []string) {
 		waitGroup.Add(1)
 
 		go func() {
-			Synchronize(centralDir, dir)
+			Synchronize(centralDir, dir, currentFile, errChan)
 			waitGroup.Done()
 		}()
 	}
