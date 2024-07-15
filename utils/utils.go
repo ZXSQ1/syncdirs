@@ -22,9 +22,10 @@ func Error(errMsg string) string {
 /*
 description: prints the formatted error
 arguments:
-	- errMsg: the string error message
+	- format: the format string passed to Printf
+	- objs: the objects to print in the format
 return: no return
 */
-func PrintError(errMsg string) {
-	fmt.Println(Error(errMsg))
+func PrintError(format string , objs ...any) {
+	fmt.Println(Error(fmt.Sprintf(format, objs...)))
 }
