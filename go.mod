@@ -2,7 +2,10 @@ module github.com/ZXSQ1/syncdirs
 
 go 1.22.2
 
+require github.com/fatih/color v1.17.0
+
 require (
-	github.com/fatih/color v1.17.0
-	github.com/charmbracelet/bubbletea v0.26.6
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
+	golang.org/x/sys v0.21.0 // indirect
 )
