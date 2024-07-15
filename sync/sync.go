@@ -44,13 +44,15 @@ func Synchronize(dirA, dirB string, currentFile, errChan chan string) {
 			}
 
 			currentFile<-sourcePath
+			
+			close(currentFile)
+			close(errChan)
+
 			waitGroup.Done()
 		}()
 	}
 
 	waitGroup.Wait()
-	close(currentFile)
-	close(errChan)
 }
 
 

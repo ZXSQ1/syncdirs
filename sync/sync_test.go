@@ -48,19 +48,21 @@ func TestSynchronize(t *testing.T) {
 	currentFile, errChan := make(chan string), make(chan string)
 	Synchronize(pathDirA, pathDirB, currentFile, errChan)
 
-	for {
-		if current, ok := <- currentFile; ok {
-			println(current)
-		} else {
-			break
-		}
+	go func() {
+		for {
+			if current, ok := <- currentFile; ok {
+				println(current)
+			} else {
+				break
+			}
 		
-		if err, ok := <- errChan; ok {
-			println(err)
-		} else {
-			break
+			if err, ok := <- errChan; ok {
+				println(err)
+			} else {
+				break
+			}
 		}
-	}
+	}()
 
 	contentsDirA, _ := files.ListDir(pathDirA, true)
 	contentsDirB, _ := files.ListDir(pathDirB, true)
@@ -126,19 +128,21 @@ func TestSynchronizeMultiple(t *testing.T) {
 	currentFile, errChan := make(chan string), make(chan string)
 	SynchronizeMultiple([]string{pathDirA, pathDirB, pathDirC}, currentFile, errChan)
 
-	for {
-		if current, ok := <- currentFile; ok {
-			println(current)
-		} else {
-			break
-		}
+	go func() {
+		for {
+			if current, ok := <- currentFile; ok {
+				println(current)
+			} else {
+				break
+			}
 		
-		if err, ok := <- errChan; ok {
-			println(err)
-		} else {
-			break
+			if err, ok := <- errChan; ok {
+				println(err)
+			} else {
+				break
+			}
 		}
-	}
+	}()
 
 	contentsDirA, _ := files.ListDir(pathDirA, true)
 	contentsDirB, _ := files.ListDir(pathDirB, true)
