@@ -56,3 +56,73 @@ func TestSynchronize(t *testing.T) {
 		}
 	}
 }
+
+func TestSynchronizeMultiple(t *testing.T) {
+	pathDirA := "temp1"
+	entriesDirA := []string{
+		"something/good",
+		"something/bad",
+		"something/to_eat/pizza",
+		"something/to_eat/tomato",
+		"something/to_drink/coffee",
+		"rust",
+	}
+
+	pathDirB := "temp2"
+	entriesDirB := []string{
+		"something/good",
+		"something/bad",
+		"something/to_eat/burger",
+		"something/to_eat/mango",
+		"something/to_eat/tomato",
+		"something/to_drink/tea",
+		"go",
+	}
+
+	pathDirC := "temp3"
+	entriesDirC := []string{
+		"something/good",
+		"something/bad",
+		"something/horrible",
+		"something/terrible",
+		"something/to_do/code",
+		"something/to_eat/mango",
+		"something/to_do/write_tests",
+		"python",
+	}
+
+	t.Cleanup(func() {
+		for _, pathDir := range []string{pathDirA, pathDirB, pathDirC} {
+			os.RemoveAll(pathDir)
+		}
+	})
+
+	for dirPath, entries := range map[string][]string{
+		pathDirA: entriesDirA,
+		pathDirB: entriesDirB,
+		pathDirC: entriesDirC} {
+	
+		for _, path := range entries {
+			path = dirPath + "/" + path
+			os.MkdirAll(path, 0644)
+		}
+	}
+
+	SynchronizeMultiple([]string{pathDirA, pathDirB, pathDirC})
+
+	contentsDirA, _ := files.ListDir(pathDirA, true)
+	contentsDirB, _ := files.ListDir(pathDirB, true)
+	contentsDirC, _ := files.ListDir(pathDirC, true)
+
+	for _, path := range contentsDirA {
+		if !slices.Contains(contentsDirB, path) {
+			t.Fail()
+		}
+	}
+
+	for _, path := range contentsDirA {
+		if !slices.Contains(contentsDirC, path) {
+			t.Fail()
+		}
+	}
+}
