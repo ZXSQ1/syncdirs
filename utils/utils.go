@@ -6,6 +6,9 @@ import (
 	"github.com/fatih/color"
 )
 
+var errCol = color.New(color.Bold, color.FgRed)
+
+
 /*
 description: formats error message
 arguments:
@@ -13,7 +16,7 @@ arguments:
 return: the formatted error message string
 */
 func Error(errMsg string) string {
-	return color.RedString("E: ") + errMsg
+	return errCol.Sprint("E: ") + errMsg
 }
 
 /*
