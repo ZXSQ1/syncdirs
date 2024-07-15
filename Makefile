@@ -29,9 +29,9 @@ build:
 	GOOS=freebsd GOARCH=386 $(COMPILE) -o bin/$(BIN)-freebsd-386 $(MAIN)
 
 test:
-	$(TEST) files/*
-	$(TEST) sync/*
-	$(TEST) utils/*
+	$(TEST) files/*.go
+	$(TEST) sync/*.go
+	$(TEST) utils/*.go
 
 clean:
 	rm -rf bin/*
