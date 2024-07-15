@@ -109,7 +109,8 @@ func TestSynchronizeMultiple(t *testing.T) {
 		}
 	}
 
-	SynchronizeMultiple([]string{pathDirA, pathDirB, pathDirC})
+	currentFile, errChan := make(chan string), make(chan string)
+	SynchronizeMultiple([]string{pathDirA, pathDirB, pathDirC}, currentFile, errChan)
 
 	contentsDirA, _ := files.ListDir(pathDirA, true)
 	contentsDirB, _ := files.ListDir(pathDirB, true)
