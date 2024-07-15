@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/ZXSQ1/syncdirs/files"
+	"github.com/ZXSQ1/syncdirs/utils"
 )
 
 /*
@@ -34,7 +35,12 @@ func Synchronize(dirA, dirB string) {
 		waitGroup.Add(1)
 
 		go func() { 
-			files.Copy(sourcePath, destPath)
+			err := files.Copy(sourcePath, destPath)
+
+			if err != nil {
+				utils.PrintError("copy operation file: %s failed", sourcePath)
+			}
+			
 			waitGroup.Done()
 		}()
 	}
