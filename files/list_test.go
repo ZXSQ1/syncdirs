@@ -4,15 +4,17 @@ import (
 	"os"
 	"slices"
 	"testing"
+
+	"github.com/ZXSQ1/syncdirs/utils"
 )
 
 func TestListDir(t *testing.T) {
 	tempDir := "temp"
 	pathsToCreate := []string{
-		tempDir+"/name/first",
-		tempDir+"/name/second",
-		tempDir+"/address",
-		tempDir+"/gender",
+		tempDir + "/name/first",
+		tempDir + "/name/second",
+		tempDir + "/address",
+		tempDir + "/gender",
 	}
 
 	t.Cleanup(func() {
@@ -27,7 +29,7 @@ func TestListDir(t *testing.T) {
 	entries, err := ListDir(tempDir, false)
 
 	if err != nil {
-		t.Fail()
+		utils.PrintError(err.Error())
 	}
 
 	for _, entry := range entries {
@@ -39,11 +41,11 @@ func TestListDir(t *testing.T) {
 	entries, err = ListDir(tempDir, true)
 
 	if err != nil {
-		t.Fail()
+		utils.PrintError(err.Error())
 	}
 
 	for index, pathToCreate := range pathsToCreate {
-		pathsToCreate[index] = pathToCreate[len(tempDir) + 1:]
+		pathsToCreate[index] = pathToCreate[len(tempDir)+1:]
 	}
 
 	for _, entry := range entries {
