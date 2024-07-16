@@ -40,14 +40,12 @@ arguments:
 
 return: a boolean to check whether it is valid or not
 */
-func ValidateDir(dir *string) bool {
-	if !files.IsExist(*dir) {
-		return false
-	} else if !files.IsDir(*dir) {
-		return false
+func ValidateDir(dir string) (string, bool) {
+	if !files.IsExist(dir) {
+		return "", false
+	} else if !files.IsDir(dir) {
+		return "", false
 	}
 
-	*dir = path.Clean(*dir)
-
-	return true
+	return path.Clean(dir), true
 }
