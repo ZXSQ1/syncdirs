@@ -49,9 +49,7 @@ func ValidateDir(dir string) (string, bool) {
 		return dir, false
 	}
 
-	if isDir, err := files.IsDir(dir); !isDir {
-		fmt.Println(err)
-
+	if isDir, _ := files.IsDir(dir); !isDir {
 		return dir, false
 	}
 

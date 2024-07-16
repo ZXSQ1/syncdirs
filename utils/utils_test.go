@@ -28,19 +28,19 @@ func TestValidateDir(t *testing.T) {
 	dirPath, ok := ValidateDir(dirPath)
 
 	if !ok {
-		t.Fatal("if 1")
+		t.Fail()
 	}
 
 	_, ok = ValidateDir(dirPath + "1")
 
 	if ok {
-		t.Fatal("if 2")
+		t.Fail()
 	}
 
 	os.RemoveAll(dirPath)
 	_, ok = ValidateDir(dirPath)
 
 	if ok {
-		t.Fatal("if 3")
+		t.Fail()
 	}
 }
