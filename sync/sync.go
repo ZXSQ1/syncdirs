@@ -7,16 +7,22 @@ import (
 	"github.com/ZXSQ1/syncdirs/utils"
 )
 
+type SyncData struct {
+	sourceFile string // the source file path
+	destFile   string // the destination file path
+	err        string // the error string if there is
+}
+
 /*
 description: synchronizes 2 directories
 arguments:
-	- dirA: the string path to the first directory
-	- dirB: the string path to the second directory
-	- currentFile: the string channel where the currentFile is signaled
-	- errChan: the string channel to signal error texts
+  - dirA: the string path to the first directory
+  - dirB: the string path to the second directory
+  - syncData: a channel of the *SyncData type
+
 return: no return
 */
-func Synchronize(dirA, dirB string, currentFile, errChan chan string) {
+func Synchronize(dirA, dirB string, syncData chan *SyncData) {
 	var waitGroup = &sync.WaitGroup{}
 
 	source := make(chan string)
@@ -25,29 +31,29 @@ func Synchronize(dirA, dirB string, currentFile, errChan chan string) {
 	go func() {
 		DifferDirToCopy(dirA, dirB, source, dest)
 	}()
-	
+
 	for {
-		sourcePath, sourceOk := <- source
-		destPath, destOk := <- dest
+		sourcePath, sourceOk := <-source
+		destPath, destOk := <-dest
 
 		if !sourceOk || !destOk {
 			break
 		}
-		
+
 		waitGroup.Add(1)
 
-		go func() { 
+		go func() {
+			data := SyncData{}
 			err := files.Copy(sourcePath, destPath)
 
+			data.sourceFile = sourcePath
+			data.destFile = destPath
+
 			if err != nil {
-				errChan<-utils.Error("copy operation failed")
+				data.err = utils.Error("copy operation failed")
 			}
 
-			currentFile<-sourcePath
-			
-			close(currentFile)
-			close(errChan)
-
+			syncData <- &data
 			waitGroup.Done()
 		}()
 	}
@@ -55,21 +61,20 @@ func Synchronize(dirA, dirB string, currentFile, errChan chan string) {
 	waitGroup.Wait()
 }
 
-
 /*
 description: synchronizes multiple directories
 arguments:
-	- dirs: the string slice containing the directories
-	- currentFile: the string channel to carry the currentFile
-	- errChan: the string channel that holds the error text
+  - dirs: the string slice containing the directories
+  - syncData: the channel of the *SyncData type
+
 return: no return
 */
-func SynchronizeMultiple(dirs []string, currentFile, errChan chan string) {
+func SynchronizeMultiple(dirs []string, syncData chan *SyncData) {
 	switch len(dirs) {
 	case 0, 1:
 		return
 	case 2:
-		Synchronize(dirs[0], dirs[1], currentFile, errChan)
+		Synchronize(dirs[0], dirs[1], syncData)
 		return
 	}
 
@@ -80,7 +85,7 @@ func SynchronizeMultiple(dirs []string, currentFile, errChan chan string) {
 		waitGroup.Add(1)
 
 		go func() {
-			Synchronize(centralDir, dir, currentFile, errChan)
+			Synchronize(centralDir, dir, syncData)
 			waitGroup.Done()
 		}()
 	}

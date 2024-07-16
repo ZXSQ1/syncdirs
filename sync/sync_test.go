@@ -1,6 +1,7 @@
 package sync
 
 import (
+	"fmt"
 	"os"
 	"slices"
 	"testing"
@@ -45,19 +46,15 @@ func TestSynchronize(t *testing.T) {
 		os.MkdirAll(path, 0644)
 	}
 
-	currentFile, errChan := make(chan string), make(chan string)
-	Synchronize(pathDirA, pathDirB, currentFile, errChan)
+	data := make(chan *SyncData)
+	Synchronize(pathDirA, pathDirB, data)
 
 	go func() {
 		for {
-			if current, ok := <- currentFile; ok {
-				println(current)
-			} else {
-				break
-			}
-		
-			if err, ok := <- errChan; ok {
-				println(err)
+			if syncData, ok := <-data; ok {
+				fmt.Println(syncData.sourceFile)
+				fmt.Println(syncData.destFile)
+				fmt.Println(syncData.err)
 			} else {
 				break
 			}
@@ -118,26 +115,22 @@ func TestSynchronizeMultiple(t *testing.T) {
 		pathDirA: entriesDirA,
 		pathDirB: entriesDirB,
 		pathDirC: entriesDirC} {
-	
+
 		for _, path := range entries {
 			path = dirPath + "/" + path
 			os.MkdirAll(path, 0644)
 		}
 	}
 
-	currentFile, errChan := make(chan string), make(chan string)
-	SynchronizeMultiple([]string{pathDirA, pathDirB, pathDirC}, currentFile, errChan)
+	data := make(chan *SyncData)
+	SynchronizeMultiple([]string{pathDirA, pathDirB, pathDirC}, data)
 
 	go func() {
 		for {
-			if current, ok := <- currentFile; ok {
-				println(current)
-			} else {
-				break
-			}
-		
-			if err, ok := <- errChan; ok {
-				println(err)
+			if syncData, ok := <-data; ok {
+				fmt.Println(syncData.sourceFile)
+				fmt.Println(syncData.destFile)
+				fmt.Println(syncData.err)
 			} else {
 				break
 			}
