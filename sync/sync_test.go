@@ -38,12 +38,12 @@ func TestSynchronize(t *testing.T) {
 
 	for _, path := range entriesDirA {
 		path = pathDirA + "/" + path
-		os.MkdirAll(path, 0644)
+		os.MkdirAll(path, files.DirPerm)
 	}
 
 	for _, path := range entriesDirB {
 		path = pathDirB + "/" + path
-		os.MkdirAll(path, 0644)
+		os.MkdirAll(path, files.DirPerm)
 	}
 
 	data := make(chan *SyncData)
@@ -118,7 +118,7 @@ func TestSynchronizeMultiple(t *testing.T) {
 
 		for _, path := range entries {
 			path = dirPath + "/" + path
-			os.MkdirAll(path, 0644)
+			os.MkdirAll(path, files.DirPerm)
 		}
 	}
 

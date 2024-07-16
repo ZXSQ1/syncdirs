@@ -35,7 +35,7 @@ func TestIsFile(t *testing.T) {
 	}
 
 	os.Remove(tempPath)
-	os.Mkdir(tempPath, 0644)
+	os.Mkdir(tempPath, DirPerm)
 
 	if isFile, _ := IsFile(tempPath); isFile {
 		t.Fail()

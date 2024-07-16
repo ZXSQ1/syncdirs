@@ -29,12 +29,12 @@ func TestDiffer(t *testing.T) {
 	}
 
 	tableA := &DifferenceTable{
-		Name: "table A",
+		Name:    "table A",
 		Entries: entriesTableA,
 	}
 
 	tableB := &DifferenceTable{
-		Name: "table B",
+		Name:    "table B",
 		Entries: entriesTableB,
 	}
 
@@ -50,7 +50,7 @@ func TestDiffer(t *testing.T) {
 			t.Fail()
 		}
 	}
-	
+
 	for _, entry := range tableB.Missing {
 		if !slices.Contains([]string{
 			"something/to_eat/pizza",
@@ -91,12 +91,12 @@ func TestDifferDirToCopy(t *testing.T) {
 
 	for _, path := range entriesDirA {
 		path = pathDirA + "/" + path
-		os.MkdirAll(path, 0644)
+		os.MkdirAll(path, files.DirPerm)
 	}
 
 	for _, path := range entriesDirB {
 		path = pathDirB + "/" + path
-		os.MkdirAll(path, 0644)
+		os.MkdirAll(path, files.DirPerm)
 	}
 
 	source := make(chan string)
@@ -108,12 +108,12 @@ func TestDifferDirToCopy(t *testing.T) {
 		var sourcePath string
 		var destPath string
 
-		sourcePath, ok := <-source; 
+		sourcePath, ok := <-source
 		if !ok {
 			break
 		}
 
-		destPath, ok = <-dest; 	
+		destPath, ok = <-dest
 		if !ok {
 			break
 		}

@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"fmt"
 	"os"
 	"path"
 	"testing"
+
+	"github.com/ZXSQ1/syncdirs/files"
 )
 
 func TestError(t *testing.T) {
@@ -23,26 +24,23 @@ func TestValidateDir(t *testing.T) {
 		os.RemoveAll(cacheDir)
 	})
 
-	os.MkdirAll(dirPath, 0644)
+	os.MkdirAll(dirPath, files.DirPerm)
 	dirPath, ok := ValidateDir(dirPath)
 
 	if !ok {
-		t.Fail()
+		t.Fatal("if 1")
 	}
 
-	dirPath = dirPath + "1"
-	_, ok = ValidateDir(dirPath)
+	_, ok = ValidateDir(dirPath + "1")
 
 	if ok {
-		t.Fail()
+		t.Fatal("if 2")
 	}
 
 	os.RemoveAll(dirPath)
 	_, ok = ValidateDir(dirPath)
 
 	if ok {
-		t.Fail()
+		t.Fatal("if 3")
 	}
-
-	fmt.Println(dirPath)
 }

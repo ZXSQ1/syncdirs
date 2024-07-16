@@ -38,16 +38,22 @@ description: validates the directory path
 arguments:
   - dir: the string type path to the directory
 
-return: a boolean to check whether it is valid or not
+return:
+  - true if the everything is ok
+  - false if something wasn't valid
 */
 func ValidateDir(dir string) (string, bool) {
+	dir = path.Clean(dir)
+
 	if !files.IsExist(dir) {
-		return "", false
+		return dir, false
 	}
 
-	if isDir, _ := files.IsDir(dir); !isDir {
-		return "", false
+	if isDir, err := files.IsDir(dir); !isDir {
+		fmt.Println(err)
+
+		return dir, false
 	}
 
-	return path.Clean(dir), true
+	return dir, true
 }
