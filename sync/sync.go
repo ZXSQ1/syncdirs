@@ -66,21 +66,7 @@ func Synchronize(dirA, dirB string, syncData chan *SyncData) {
 		}
 
 		waitGroup.Add(1)
-
-		go func() {
-			data := SyncData{}
-			err := files.Copy(sourcePath, destPath)
-
-			data.sourceFile = sourcePath
-			data.destFile = destPath
-
-			if err != nil {
-				data.err = utils.Error("copy operation failed")
-			}
-
-			syncData <- &data
-			waitGroup.Done()
-		}()
+		CopySync(sourcePath, destPath, syncData, waitGroup)
 	}
 
 	waitGroup.Wait()
