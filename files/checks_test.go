@@ -30,14 +30,14 @@ func TestIsFile(t *testing.T) {
 
 	os.Create(tempPath)
 
-	if !IsFile(tempPath) {
+	if isFile, _ := IsFile(tempPath); !isFile {
 		t.Fail()
 	}
 
 	os.Remove(tempPath)
 	os.Mkdir(tempPath, 0644)
 
-	if IsFile(tempPath) {
+	if isFile, _ := IsFile(tempPath); isFile {
 		t.Fail()
 	}
 }

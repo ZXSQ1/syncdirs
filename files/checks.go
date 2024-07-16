@@ -20,12 +20,18 @@ description: checks if the file is a file
 arguments:
   - file: the string path to check
 
-return: a boolean that indicates whether the file is a file or not
+return:
+- bool: a boolean that indicates whether the file is a file or not
+- error: an error object
 */
-func IsFile(file string) bool {
-	stat, _ := os.Stat(file)
+func IsFile(file string) (bool, error) {
+	stat, err := os.Stat(file)
 
-	return !stat.IsDir()
+	if err != nil {
+		return false, err
+	}
+
+	return !stat.IsDir(), nil
 }
 
 /*
@@ -35,6 +41,12 @@ arguments:
 
 return: a boolean that indicates whether the directory is a dir or not
 */
-func IsDir(file string) bool {
-	return !IsFile(file)
+func IsDir(file string) (bool, error) {
+	isFile, err := IsFile(file)
+
+	if err != nil {
+		return false, err
+	}
+
+	return isFile, nil
 }

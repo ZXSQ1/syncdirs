@@ -36,14 +36,16 @@ func PrintError(format string, objs ...any) {
 /*
 description: validates the directory path
 arguments:
-  - dir: the *string type path to the directory
+  - dir: the string type path to the directory
 
 return: a boolean to check whether it is valid or not
 */
 func ValidateDir(dir string) (string, bool) {
 	if !files.IsExist(dir) {
 		return "", false
-	} else if !files.IsDir(dir) {
+	}
+
+	if isDir, _ := files.IsDir(dir); !isDir {
 		return "", false
 	}
 

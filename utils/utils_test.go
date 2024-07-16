@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"testing"
@@ -23,20 +24,25 @@ func TestValidateDir(t *testing.T) {
 	})
 
 	os.MkdirAll(dirPath, 0644)
+	dirPath, ok := ValidateDir(dirPath)
 
-	if _, ok := ValidateDir(dirPath); !ok {
+	if !ok {
 		t.Fail()
 	}
 
 	dirPath = dirPath + "1"
+	_, ok = ValidateDir(dirPath)
 
-	if _, ok := ValidateDir(dirPath); ok {
+	if ok {
 		t.Fail()
 	}
 
 	os.RemoveAll(dirPath)
+	_, ok = ValidateDir(dirPath)
 
-	if _, ok := ValidateDir(dirPath); ok {
+	if ok {
 		t.Fail()
 	}
+
+	fmt.Println(dirPath)
 }
