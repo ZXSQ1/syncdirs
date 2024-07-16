@@ -1,14 +1,17 @@
 package files
 
-import "io"
+import (
+	"io"
+)
 
 const BufferSize = 1024 * 10
 
 /*
 description: copies the source file to the destination file
 arguments:
-	- source: the path to the source file
-	- destination: the path to the destination file
+  - source: the path to the source file
+  - destination: the path to the destination file
+
 return: an error if any problem
 */
 func Copy(source, destination string) error {
@@ -27,7 +30,7 @@ func Copy(source, destination string) error {
 	}
 
 	buffer := make([]byte, BufferSize)
-	
+
 	for {
 		nRead, err := sourceObj.Read(buffer)
 

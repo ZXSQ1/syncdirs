@@ -14,6 +14,31 @@ type SyncData struct {
 }
 
 /*
+description: the sync's version of files' copy for goroutines
+arguments:
+  - sourceFile: the path to the source file to copy
+  - destFile: the path to the destination file to copy to
+  - syncData: the channel containing the *SyncData structure
+  - waitGroup: the *WaitGroup object
+*/
+func CopySync(sourceFile, destFile string, syncData chan *SyncData, waitGroup *sync.WaitGroup) {
+	go func() {
+		data := SyncData{}
+		err := files.Copy(sourceFile, destFile)
+
+		data.sourceFile = sourceFile
+		data.destFile = destFile
+
+		if err != nil {
+			data.err = utils.Error("copy operation failed")
+		}
+
+		syncData <- &data
+		waitGroup.Done()
+	}()
+}
+
+/*
 description: synchronizes 2 directories
 arguments:
   - dirA: the string path to the first directory
