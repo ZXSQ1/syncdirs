@@ -3,7 +3,7 @@ package sync
 import "github.com/ZXSQ1/syncdirs/files"
 
 type DifferenceTable struct {
-	Name string
+	Name    string
 	Entries []string
 	Missing []string
 }
@@ -11,13 +11,14 @@ type DifferenceTable struct {
 /*
 description: gets the difference between 2 string slices
 arguments:
-	- tableA: the first table to compare (of type *DifferenceTable)
-	- tableB: the second table to compare (of type *DifferenceTable)
+  - tableA: the first table to compare (of type *DifferenceTable)
+  - tableB: the second table to compare (of type *DifferenceTable)
+
 return: no return
 */
 func Differ(tableA, tableB *DifferenceTable) {
 	const (
-		both = 0
+		both       = 0
 		onlyTableA = 1
 		onlyTableB = 2
 	)
@@ -48,22 +49,23 @@ func Differ(tableA, tableB *DifferenceTable) {
 /*
 description: gets the difference in the contents of directories
 arguments:
-	- dirA: the path to the first directory
-	- dirB: the path to the second directory
-	- source: a channel to transfer the source to be copied
-	- dest: a channel to transfer the dest to be copied to
+  - dirA: the path to the first directory
+  - dirB: the path to the second directory
+  - source: a channel to transfer the source to be copied
+  - dest: a channel to transfer the dest to be copied to
+
 return: no return
 */
 func DifferDirToCopy(dirA, dirB string, source, dest chan string) {
 	entriesDirA, _ := files.ListDir(dirA, true)
 	tableDirA := &DifferenceTable{
-		Name: dirA,
+		Name:    dirA,
 		Entries: entriesDirA,
 	}
 
 	entriesDirB, _ := files.ListDir(dirB, true)
 	tableDirB := &DifferenceTable{
-		Name: dirB,
+		Name:    dirB,
 		Entries: entriesDirB,
 	}
 
@@ -76,15 +78,15 @@ func DifferDirToCopy(dirA, dirB string, source, dest chan string) {
 		sourcePath := tableDirB.Name + "/" + missingPath
 		destPath := tableDirA.Name + "/" + missingPath
 
-		source<-sourcePath
-		dest<-destPath
+		source <- sourcePath
+		dest <- destPath
 	}
 
 	for _, missingPath := range tableDirB.Missing {
 		sourcePath := tableDirA.Name + "/" + missingPath
 		destPath := tableDirB.Name + "/" + missingPath
 
-		source<-sourcePath
-		dest<-destPath
+		source <- sourcePath
+		dest <- destPath
 	}
 }

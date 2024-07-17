@@ -8,9 +8,13 @@ import (
 )
 
 type SyncData struct {
-	sourceFile string // the source file path
-	destFile   string // the destination file path
-	err        string // the error string if there is
+	sourceFile        string // the source file path
+	destFile          string // the destination file path
+	sourceDir         string // the source directory file path
+	destDir           string // the destination directory file path
+	sourceDirEntryLen int    // the number of files in the source directory
+	destDirEntryLen   int    // the number of files in the destination directory
+	err               string // the error string if there is
 }
 
 /*
