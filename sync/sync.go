@@ -26,31 +26,6 @@ type SyncData struct {
 }
 
 /*
-description: the sync's version of files' copy for goroutines
-arguments:
-  - sourceFile: the path to the source file to copy
-  - destFile: the path to the destination file to copy to
-  - syncData: the channel containing the *SyncData structure
-  - waitGroup: the *WaitGroup object
-*/
-func CopySync(sourceFile, destFile string, syncData chan *SyncData, waitGroup *sync.WaitGroup) {
-	go func() {
-		data := SyncData{}
-		err := files.Copy(sourceFile, destFile)
-
-		data.sourceFile = sourceFile
-		data.destFile = destFile
-
-		if err != nil {
-			data.err = utils.Error("copy operation failed")
-		}
-
-		syncData <- &data
-		waitGroup.Done()
-	}()
-}
-
-/*
 description: synchronizes 2 directories
 arguments:
   - dirA: the string path to the first directory
@@ -62,23 +37,37 @@ return: no return
 func Synchronize(dirA, dirB string, syncData chan *SyncData) {
 	var waitGroup = &sync.WaitGroup{}
 
-	source := make(chan string)
-	dest := make(chan string)
+	fileData := make(chan *SyncDataFile)
+	dirData := make(chan *SyncDataDir)
 
 	go func() {
-		DifferDirToCopy(dirA, dirB, source, dest)
+		DifferDirToCopy(dirA, dirB, fileData, dirData)
 	}()
 
 	for {
-		sourcePath, sourceOk := <-source
-		destPath, destOk := <-dest
+		fileDataStruct, fileDataOk := <-fileData
+		dirDataStruct, dirDataOk := <-dirData
 
-		if !sourceOk || !destOk {
+		if !fileDataOk || !dirDataOk {
 			break
 		}
 
 		waitGroup.Add(1)
-		CopySync(sourcePath, destPath, syncData, waitGroup)
+
+		go func() {
+			data := SyncData{}
+			err := files.Copy(fileDataStruct.SourceFile, fileDataStruct.DestFile)
+
+			data.FileData = fileDataStruct
+			data.DirData = dirDataStruct
+
+			if err != nil {
+				data.Err = utils.Error("copy operation failed")
+			}
+
+			syncData <- &data
+			waitGroup.Done()
+		}()
 	}
 
 	waitGroup.Wait()
