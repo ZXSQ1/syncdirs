@@ -99,26 +99,18 @@ func TestDifferDirToCopy(t *testing.T) {
 		os.MkdirAll(path, files.DirPerm)
 	}
 
-	source := make(chan string)
-	dest := make(chan string)
-
-	go DifferDirToCopy(pathDirA, pathDirB, source, dest)
+	syncData := make(chan *SyncData)
+	go DifferDirToCopy(pathDirA, pathDirB, syncData)
 
 	for {
-		var sourcePath string
-		var destPath string
+		var data *SyncData
 
-		sourcePath, ok := <-source
+		data, ok := <-syncData
 		if !ok {
 			break
 		}
 
-		destPath, ok = <-dest
-		if !ok {
-			break
-		}
-
-		files.Copy(sourcePath, destPath)
+		files.Copy(data.sourceFile, data.destFile)
 	}
 
 	contentsDirA, _ := files.ListDir(pathDirA, true)
