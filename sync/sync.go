@@ -39,9 +39,7 @@ func Synchronize(dirA, dirB string, syncData chan *SyncData) {
 	fileData := make(chan *SyncDataFile)
 	dirData := make(chan *SyncDataDir)
 
-	go func() {
-		DifferDirToCopy(dirA, dirB, fileData, dirData)
-	}()
+	DifferDirToCopy(dirA, dirB, fileData, dirData)
 
 	for {
 		fileDataStruct, fileDataOk := <-fileData
