@@ -1,6 +1,8 @@
 package sync
 
-import "github.com/ZXSQ1/syncdirs/files"
+import (
+	"github.com/ZXSQ1/syncdirs/files"
+)
 
 type DifferenceTable struct {
 	Name    string

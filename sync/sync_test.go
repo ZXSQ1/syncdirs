@@ -52,9 +52,9 @@ func TestSynchronize(t *testing.T) {
 	go func() {
 		for {
 			if syncData, ok := <-data; ok {
-				fmt.Println(syncData.sourceFile)
-				fmt.Println(syncData.destFile)
-				fmt.Println(syncData.err)
+				fmt.Println(syncData.FileData.SourceFile)
+				fmt.Println(syncData.FileData.DestFile)
+				fmt.Println(syncData.Err)
 			} else {
 				break
 			}
@@ -128,9 +128,9 @@ func TestSynchronizeMultiple(t *testing.T) {
 	go func() {
 		for {
 			if syncData, ok := <-data; ok {
-				fmt.Println(syncData.sourceFile)
-				fmt.Println(syncData.destFile)
-				fmt.Println(syncData.err)
+				fmt.Println(syncData.FileData.SourceFile)
+				fmt.Println(syncData.FileData.DestFile)
+				fmt.Println(syncData.Err)
 			} else {
 				break
 			}

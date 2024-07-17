@@ -4,7 +4,6 @@ import (
 	"sync"
 
 	"github.com/ZXSQ1/syncdirs/files"
-	"github.com/ZXSQ1/syncdirs/utils"
 )
 
 type SyncDataFile struct {
@@ -62,10 +61,11 @@ func Synchronize(dirA, dirB string, syncData chan *SyncData) {
 			data.DirData = dirDataStruct
 
 			if err != nil {
-				data.Err = utils.Error("copy operation failed")
+				data.Err = "copy operation failed"
 			}
 
 			syncData <- &data
+
 			waitGroup.Done()
 		}()
 	}
