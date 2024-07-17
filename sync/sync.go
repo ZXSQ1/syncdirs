@@ -7,14 +7,22 @@ import (
 	"github.com/ZXSQ1/syncdirs/utils"
 )
 
+type SyncDataFile struct {
+	SourceFile string // the source file path
+	DestFile   string // the destination file path
+}
+
+type SyncDataDir struct {
+	SourceDir         string // the source directory file path
+	DestDir           string // the destination directory file path
+	SourceDirEntryLen int    // the number of files in the source directory
+	DestDirEntryLen   int    // the number of files in the destination directory
+}
+
 type SyncData struct {
-	sourceFile        string // the source file path
-	destFile          string // the destination file path
-	sourceDir         string // the source directory file path
-	destDir           string // the destination directory file path
-	sourceDirEntryLen int    // the number of files in the source directory
-	destDirEntryLen   int    // the number of files in the destination directory
-	err               string // the error string if there is
+	FileData *SyncDataFile
+	DirData  *SyncDataDir
+	Err      string
 }
 
 /*
