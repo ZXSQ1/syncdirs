@@ -51,12 +51,11 @@ description: gets the difference in the contents of directories
 arguments:
   - dirA: the path to the first directory
   - dirB: the path to the second directory
-  - source: a channel to transfer the source to be copied
-  - dest: a channel to transfer the dest to be copied to
+  - data: a channel to transfer the SyncData structure
 
 return: no return
 */
-func DifferDirToCopy(dirA, dirB string, source, dest chan string) {
+func DifferDirToCopy(dirA, dirB string, data chan *SyncData) {
 	entriesDirA, _ := files.ListDir(dirA, true)
 	tableDirA := &DifferenceTable{
 		Name:    dirA,
@@ -71,22 +70,33 @@ func DifferDirToCopy(dirA, dirB string, source, dest chan string) {
 
 	Differ(tableDirA, tableDirB)
 
-	defer close(source)
-	defer close(dest)
+	defer close(data)
 
 	for _, missingPath := range tableDirA.Missing {
 		sourcePath := tableDirB.Name + "/" + missingPath
 		destPath := tableDirA.Name + "/" + missingPath
 
-		source <- sourcePath
-		dest <- destPath
+		data <- &SyncData{
+			sourceFile:        sourcePath,
+			destFile:          destPath,
+			sourceDir:         dirB,
+			destDir:           dirA,
+			sourceDirEntryLen: len(entriesDirA),
+			destDirEntryLen:   len(entriesDirB),
+		}
 	}
 
 	for _, missingPath := range tableDirB.Missing {
 		sourcePath := tableDirA.Name + "/" + missingPath
 		destPath := tableDirB.Name + "/" + missingPath
 
-		source <- sourcePath
-		dest <- destPath
+		data <- &SyncData{
+			sourceFile:        sourcePath,
+			destFile:          destPath,
+			sourceDir:         dirA,
+			destDir:           dirB,
+			sourceDirEntryLen: len(entriesDirA),
+			destDirEntryLen:   len(entriesDirB),
+		}
 	}
 }
