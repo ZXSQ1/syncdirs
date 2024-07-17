@@ -8,14 +8,14 @@ import (
 var dirs []string
 
 type Model struct {
-	sourceDir   string
-	destDir     string
-	currentFile string
-	progress    float32
+	sourceFile string
+	destFile   string
+	progress   float32
 }
 
+var syncData = make(chan *sync.SyncData)
+
 func (m Model) Init() tea.Cmd {
-	var syncData = make(chan *sync.SyncData)
 	sync.SynchronizeMultiple(dirs, syncData)
 
 	return func() tea.Msg {
