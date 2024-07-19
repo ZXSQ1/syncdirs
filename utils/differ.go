@@ -7,8 +7,8 @@ arguments:
   - b: the second slice to compare.
 
 return: a string slice of the missing strings prefixed by:
-  - the string literal "a\t" if the string is missing from slice a
-  - the string literal "b\t" if the string is missing from slice b
+  - the string literal "a:\t" if the string is missing from slice a
+  - the string literal "b:\t" if the string is missing from slice b
 */
 func Differ(a []string, b []string) []string {
 	const (
