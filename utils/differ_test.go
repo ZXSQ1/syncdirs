@@ -99,7 +99,7 @@ func TestDifferDirToCopy(t *testing.T) {
 		os.MkdirAll(path, files.DirPerm)
 	}
 
-	syncFileData, syncDirData := make(chan *SyncDataFile), make(chan *SyncDataDir)
+	syncFileData, syncDirData := make(chan SyncDataFile), make(chan SyncDataDir)
 	go DifferDirToCopy(pathDirA, pathDirB, syncFileData, syncDirData)
 
 	for {
