@@ -9,6 +9,8 @@ var dirs []string
 type Model struct {
 	sourceFile string
 	destFile   string
+	sourceDir  string
+	destDir    string
 	progress   float32
 }
 
