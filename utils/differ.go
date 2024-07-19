@@ -1,20 +1,16 @@
 package utils
 
-type DifferenceTable struct {
-	Name    string
-	Entries []string
-	Missing []string
-}
-
 /*
 description: gets the difference between 2 string slices
 arguments:
-  - tableA: the first table to compare (of type *DifferenceTable)
-  - tableB: the second table to compare (of type *DifferenceTable)
+  - a: the first slice to compare.
+  - b: the second slice to compare.
 
-return: no return
+return: a string slice of the missing strings prefixed by:
+  - the string literal "a\t" if the string is missing from slice a
+  - the string literal "b\t" if the string is missing from slice b
 */
-func Differ(tableA, tableB *DifferenceTable) {
+func Differ(a []string, b []string) []string {
 	const (
 		both       = 0
 		onlyTableA = 1
@@ -22,12 +18,13 @@ func Differ(tableA, tableB *DifferenceTable) {
 	)
 
 	var fullTable = map[string]int{}
+	var fullSlice = []string{}
 
-	for _, entry := range tableA.Entries {
+	for _, entry := range a {
 		fullTable[entry] = onlyTableA
 	}
 
-	for _, entry := range tableB.Entries {
+	for _, entry := range b {
 		if _, ok := fullTable[entry]; ok {
 			fullTable[entry] = both
 		} else {
@@ -37,9 +34,11 @@ func Differ(tableA, tableB *DifferenceTable) {
 
 	for key, val := range fullTable {
 		if val == onlyTableA {
-			tableB.Missing = append(tableB.Missing, key)
+			fullSlice = append(fullSlice, "b\t"+key)
 		} else if val == onlyTableB {
-			tableA.Missing = append(tableA.Missing, key)
+			fullSlice = append(fullSlice, "a\t"+key)
 		}
 	}
+
+	return fullSlice
 }
