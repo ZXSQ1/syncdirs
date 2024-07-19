@@ -1,7 +1,6 @@
 package ui
 
 import (
-	"github.com/ZXSQ1/syncdirs/sync"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -13,16 +12,8 @@ type Model struct {
 	progress   float32
 }
 
-var syncData = make(chan *sync.SyncData)
-
 func (m Model) Init() tea.Cmd {
-	sync.SynchronizeMultiple(dirs, syncData)
-
 	return func() tea.Msg {
-		if data, ok := <-syncData; ok {
-			return data
-		}
-
 		return nil
 	}
 }
