@@ -61,3 +61,18 @@ func (lister *Lister) List() {
 		}
 	}
 }
+
+/*
+description: gets the directory entries given the name
+arguments:
+  - dirName: the string path referring to the directory path
+
+return: the string slice of the paths
+*/
+func (lister *Lister) Get(dirName string) []string {
+	if val, ok := lister.DirEntries[dirName]; ok {
+		return val
+	} else {
+		return nil
+	}
+}
