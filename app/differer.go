@@ -4,9 +4,11 @@ type MissingPath string
 type FoundPath string
 
 type PathDiffererAB struct {
-	DirAName   string
-	DirBName   string
-	Difference map[MissingPath]FoundPath
+	DirAName    string
+	DirBName    string
+	DirAEntries []string
+	DirBEntries []string
+	Difference  map[MissingPath]FoundPath
 }
 
 /*
@@ -17,9 +19,11 @@ arguments:
 
 return: a PathDiffererAB instance
 */
-func NewPathDiffererAB(dirA, dirB string) PathDiffererAB {
+func NewPathDiffererAB(dirA, dirB string, dirAEntries, dirBEntries []string) PathDiffererAB {
 	return PathDiffererAB{
-		DirAName: dirA,
-		DirBName: dirB,
+		DirAName:    dirA,
+		DirBName:    dirB,
+		DirAEntries: dirAEntries,
+		DirBEntries: dirBEntries,
 	}
 }
