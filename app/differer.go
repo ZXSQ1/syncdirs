@@ -29,6 +29,7 @@ func NewPathDiffererAB(dirA, dirB string, dirAEntries, dirBEntries []string) Pat
 		DirBName:    dirB,
 		DirAEntries: dirAEntries,
 		DirBEntries: dirBEntries,
+		Difference:  map[MissingPath]FoundPath{},
 	}
 }
 
@@ -42,14 +43,14 @@ func (pathDiffererAB *PathDiffererAB) Differ() {
 
 	for _, difference := range differences {
 		if difference[:3] == "a:\t" {
-			difference = difference[4:]
+			difference = difference[3:]
 
 			missingPath := MissingPath(pathDiffererAB.DirAName + "/" + difference)
 			foundPath := FoundPath(pathDiffererAB.DirBName + "/" + difference)
 
 			pathDiffererAB.Difference[missingPath] = foundPath
 		} else {
-			difference = difference[4:]
+			difference = difference[3:]
 
 			missingPath := MissingPath(pathDiffererAB.DirBName + "/" + difference)
 			foundPath := FoundPath(pathDiffererAB.DirAName + "/" + difference)
