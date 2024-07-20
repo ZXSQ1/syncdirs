@@ -20,7 +20,8 @@ return: a Lister structure
 */
 func NewLister(dirNames []string) Lister {
 	return Lister{
-		DirNames: dirNames,
+		DirNames:   dirNames,
+		DirEntries: map[string][]string{},
 	}
 }
 
