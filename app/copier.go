@@ -1,6 +1,15 @@
 package copier
 
 type Copier struct {
-	sourceFiles []string
-	destFiles   []string
+	SourceFiles []string
+	DestFiles   []string
+}
+
+/*
+description: creates a new Copier instance
+arguments: no arguments
+return: the Copier instance
+*/
+func NewCopier() Copier {
+	return Copier{}
 }
