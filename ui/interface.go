@@ -7,14 +7,15 @@ import (
 var dirs []string
 
 type Model struct {
-	sourceFile string
-	destFile   string
-	sourceDir  string
-	destDir    string
-	progress   float32
+	sourceFile chan string
+	destFile   chan string
+	sourceDir  chan string
+	destDir    chan string
+	progress   chan float32
 }
 
 func (m Model) Init() tea.Cmd {
+
 	return func() tea.Msg {
 		return nil
 	}

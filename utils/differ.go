@@ -34,9 +34,9 @@ func Differ(a []string, b []string) []string {
 
 	for key, val := range fullTable {
 		if val == onlyTableA {
-			fullSlice = append(fullSlice, "b\t"+key)
+			fullSlice = append(fullSlice, "b:\t"+key)
 		} else if val == onlyTableB {
-			fullSlice = append(fullSlice, "a\t"+key)
+			fullSlice = append(fullSlice, "a:\t"+key)
 		}
 	}
 
