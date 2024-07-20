@@ -1,4 +1,4 @@
-package copier
+package app
 
 type Copier struct {
 	SourceFiles []string
@@ -10,8 +10,8 @@ description: creates a new Copier instance
 arguments: no arguments
 return: the Copier instance
 */
-func NewCopier() Copier {
-	return Copier{}
+func NewCopier(sourceFiles, destFiles []string) Copier {
+	return Copier{sourceFiles, destFiles}
 }
 
 /*
