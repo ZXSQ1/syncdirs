@@ -1,5 +1,9 @@
 package app
 
+import (
+	"github.com/ZXSQ1/syncdirs/utils"
+)
+
 type MissingPath string
 type FoundPath string
 
@@ -25,5 +29,32 @@ func NewPathDiffererAB(dirA, dirB string, dirAEntries, dirBEntries []string) Pat
 		DirBName:    dirB,
 		DirAEntries: dirAEntries,
 		DirBEntries: dirBEntries,
+	}
+}
+
+/*
+description: finds the difference between 2 directories
+arguments: no arguments
+return: no return
+*/
+func (pathDiffererAB *PathDiffererAB) Differ() {
+	differences := utils.Differ(pathDiffererAB.DirAEntries, pathDiffererAB.DirBEntries)
+
+	for _, difference := range differences {
+		if difference[:3] == "a:\t" {
+			difference = difference[4:]
+
+			missingPath := MissingPath(pathDiffererAB.DirAName + "/" + difference)
+			foundPath := FoundPath(pathDiffererAB.DirBName + "/" + difference)
+
+			pathDiffererAB.Difference[missingPath] = foundPath
+		} else {
+			difference = difference[4:]
+
+			missingPath := MissingPath(pathDiffererAB.DirBName + "/" + difference)
+			foundPath := FoundPath(pathDiffererAB.DirAName + "/" + difference)
+
+			pathDiffererAB.Difference[missingPath] = foundPath
+		}
 	}
 }
