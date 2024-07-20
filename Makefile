@@ -3,6 +3,7 @@ MAIN = main.go
 BIN = syncdirs
 COMPILE = go build
 TEST = go test
+TEST_OPTS = -v -timeout 10s
 
 build:
 	GOOS=windows GOARCH=amd64 $(COMPILE) -o bin/$(BIN)-windows-amd64.exe $(MAIN)
@@ -29,9 +30,9 @@ build:
 	GOOS=freebsd GOARCH=386 $(COMPILE) -o bin/$(BIN)-freebsd-386 $(MAIN)
 
 test:
-	$(TEST) files/*.go
-	$(TEST) sync/*.go
-	$(TEST) utils/*.go
+	$(TEST) files/*.go $(TEST_OPTS)
+	$(TEST) ui/*.go $(TEST_OPTS)
+	$(TEST) utils/*.go $(TEST_OPTS)
 
 clean:
 	rm -rf bin/*

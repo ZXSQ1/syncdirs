@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 	"sync"
@@ -67,14 +68,6 @@ func (data SyncData) Copy(centralDirName, destDirName string) SyncData {
 	var waitGroup = sync.WaitGroup{}
 	var mutex = sync.Mutex{}
 
-	defer func() {
-		close(data.sourceFile)
-		close(data.sourceDir)
-		close(data.destFile)
-		close(data.destDir)
-		close(data.progress)
-	}()
-
 	for _, path := range data.missingDestDir {
 		waitGroup.Add(1)
 
@@ -136,17 +129,33 @@ func (data SyncData) Copy(centralDirName, destDirName string) SyncData {
 
 func Synchronize(directories []string, sourceFile, destFile, sourceDir, destDir chan string, progress chan float32) {
 	var centralDir = directories[0]
-	var mutex = sync.Mutex{}
+	//	var mutex = sync.Mutex{}
 	var waitGroup = sync.WaitGroup{}
 	var data = SyncData{}
+
+	defer func() {
+		close(data.sourceFile)
+		close(data.sourceDir)
+		close(data.destFile)
+		close(data.destDir)
+		close(data.progress)
+
+		close(sourceFile)
+		close(sourceDir)
+		close(destFile)
+		close(destDir)
+		close(progress)
+	}()
 
 	for i := 0; i < 2; i++ {
 		for _, syncDir := range directories[1:] {
 			// Listing Directory Contents
 			data = data.ListDir(centralDir, syncDir)
+			fmt.Println("done")
 
 			// Differing Directories
 			data = data.Differ(centralDir, syncDir)
+			fmt.Println("done")
 
 			// Copying Directories
 			waitGroup.Add(1)
@@ -154,16 +163,28 @@ func Synchronize(directories []string, sourceFile, destFile, sourceDir, destDir 
 			go func() {
 				defer waitGroup.Done()
 
-				mutex.Lock()
 				data = data.Copy(centralDir, syncDir)
-				mutex.Unlock()
 			}()
 
-			sourceFile <- <-data.sourceFile
-			destFile <- <-data.destFile
-			sourceDir <- <-data.sourceDir
-			destDir <- <-data.destDir
-			progress <- float32(<-data.progress) * 100 / float32(len(data.differences))
+			if val, ok := <-data.sourceFile; ok {
+				sourceFile <- val
+			}
+
+			if val, ok := <-data.sourceDir; ok {
+				sourceDir <- val
+			}
+
+			if val, ok := <-data.destFile; ok {
+				sourceFile <- val
+			}
+
+			if val, ok := <-data.destDir; ok {
+				destDir <- val
+			}
+
+			if val, ok := <-data.progress; ok {
+				progress <- float32(val) * 100 / float32(len(data.differences))
+			}
 
 			waitGroup.Wait()
 		}
