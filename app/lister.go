@@ -17,3 +17,14 @@ func NewLister(dirNames []string) Lister {
 		DirNames: dirNames,
 	}
 }
+
+/*
+description: adds a directory path to the slice of directories
+arguments:
+  - dirName: the directory path to add
+
+return: no return
+*/
+func (lister *Lister) Add(dirName string) {
+	lister.DirNames = append(lister.DirNames, dirName)
+}
