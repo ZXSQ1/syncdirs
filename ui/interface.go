@@ -6,7 +6,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-var dirs []string
+var Dirs []string
 
 type Model struct {
 	sourceFile chan string
@@ -21,7 +21,7 @@ const (
 )
 
 func (m Model) Init() tea.Cmd {
-	Synchronize(dirs, m.sourceFile, m.destFile, m.sourceDir, m.destDir, m.progress)
+	Synchronize(Dirs, m.sourceFile, m.destFile, m.sourceDir, m.destDir, m.progress)
 
 	return nil
 }
