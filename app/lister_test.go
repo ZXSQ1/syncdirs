@@ -11,6 +11,12 @@ import (
 func TestLister(t *testing.T) {
 	dirs := []string{"temp1", "temp2"}
 
+	t.Cleanup(func() {
+		for _, dir := range dirs {
+			os.RemoveAll(dir)
+		}
+	})
+
 	for _, path := range []string{
 		dirs[0] + "/main/thing",
 		dirs[0] + "/jars/thing",
