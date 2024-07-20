@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"github.com/fatih/color"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -29,5 +31,27 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	return ""
+	var displayString string
+	var sourceDir, destDir, sourceFile, destFile string
+	var progress float32
+
+	sourceDir = <-m.sourceDir
+	destDir = <-m.destDir
+	sourceFile = <-m.sourceFile
+	destFile = <-m.destFile
+	progress = <-m.progress
+
+	greenCol := color.New(color.Bold, color.FgGreen)
+	yellowCol := color.New(color.Bold, color.FgYellow)
+
+	progressText := yellowCol.Sprintf("%.1f\n\n", progress)
+
+	if progress == 100.0 {
+		progressText = greenCol.Sprint("finished\n\n")
+	}
+
+	displayString = sourceDir + " ->\n" + destDir + " " + progressText
+	displayString += sourceFile + " ->\n" + destFile
+
+	return displayString
 }
