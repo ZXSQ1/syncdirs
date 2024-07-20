@@ -14,10 +14,21 @@ type Model struct {
 	progress   chan float32
 }
 
+const (
+	EventDataChanged = 1982
+)
+
 func (m Model) Init() tea.Cmd {
+	Synchronize(dirs, m.sourceFile, m.destFile, m.sourceDir, m.destDir, m.progress)
 
 	return func() tea.Msg {
-		return nil
+		if _, ok := <-m.sourceFile; ok {
+			m.sourceFile <- <-m.sourceFile
+
+			return EventDataChanged
+		} else {
+			return nil
+		}
 	}
 }
 
