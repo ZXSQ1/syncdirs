@@ -15,21 +15,13 @@ type Model struct {
 }
 
 const (
-	EventDataChanged = 1982
+	EventDataCreated = 1982
 )
 
 func (m Model) Init() tea.Cmd {
 	Synchronize(dirs, m.sourceFile, m.destFile, m.sourceDir, m.destDir, m.progress)
 
-	return func() tea.Msg {
-		if _, ok := <-m.sourceFile; ok {
-			m.sourceFile <- <-m.sourceFile
-
-			return EventDataChanged
-		} else {
-			return nil
-		}
-	}
+	return nil
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
