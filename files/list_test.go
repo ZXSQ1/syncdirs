@@ -22,7 +22,7 @@ func TestListDir(t *testing.T) {
 	})
 
 	for _, pathToCreate := range pathsToCreate {
-		fileObj, _ := GetFile(pathToCreate)
+		fileObj, _ := GetFile(pathToCreate, FilePerm)
 		fileObj.Close()
 	}
 
@@ -32,10 +32,8 @@ func TestListDir(t *testing.T) {
 		utils.PrintError(err.Error())
 	}
 
-	for _, entry := range entries {
-		if !slices.Contains(pathsToCreate, entry) {
-			t.Fail()
-		}
+	if !slices.Equal([]string{"temp/address", "temp/gender", "temp/name/first", "temp/name/second"}, entries) {
+		t.Fail()
 	}
 
 	entries, err = ListDir(tempDir, true)
@@ -48,9 +46,7 @@ func TestListDir(t *testing.T) {
 		pathsToCreate[index] = pathToCreate[len(tempDir)+1:]
 	}
 
-	for _, entry := range entries {
-		if !slices.Contains(pathsToCreate, entry) {
-			t.Fail()
-		}
+	if !slices.Equal([]string{"address", "gender", "name/first", "name/second"}, entries) {
+		t.Fail()
 	}
 }

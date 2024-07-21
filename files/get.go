@@ -1,6 +1,7 @@
 package files
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
 )
@@ -14,7 +15,7 @@ return:
   - *os.File: the file object
   - error: an error
 */
-func GetFile(path string) (*os.File, error) {
+func GetFile(path string, perm fs.FileMode) (*os.File, error) {
 	var file *os.File
 	var err error = nil
 
@@ -23,9 +24,12 @@ func GetFile(path string) (*os.File, error) {
 	}
 
 	if IsExist(path) {
-		file, err = os.Open(path)
+		stat, _ := os.Stat(path)
+		perm = stat.Mode()
+
+		file, err = os.OpenFile(path, os.O_RDWR, perm)
 	} else {
-		file, err = os.Create(path)
+		file, err = os.OpenFile(path, os.O_WRONLY|os.O_CREATE, fs.FileMode(perm))
 	}
 
 	return file, err

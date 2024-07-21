@@ -12,7 +12,8 @@ func TestGetFile(t *testing.T) {
 		os.Remove(temp)
 	})
 
-	file, err := GetFile(temp)
+	file, err := GetFile(temp, FilePerm)
+	defer file.Close()
 
 	if err != nil {
 		t.Fail()

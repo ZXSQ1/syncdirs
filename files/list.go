@@ -32,7 +32,9 @@ func ListDir(directory string, trimBase bool) ([]string, error) {
 		entryPath := directory + "/" + entry.Name()
 
 		if isDir, _ := IsDir(entryPath); isDir {
-			recursiveEntries, _ := ListDir(entryPath, false)
+			var recursiveEntries []string
+
+			recursiveEntries, err = ListDir(entryPath, false)
 			result = append(result, recursiveEntries...)
 		} else {
 			result = append(result, entryPath)

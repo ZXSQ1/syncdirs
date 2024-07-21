@@ -2,6 +2,7 @@ package files
 
 import (
 	"io"
+	"os"
 )
 
 const BufferSize = 1024 * 10
@@ -15,14 +16,17 @@ arguments:
 return: an error if any problem
 */
 func Copy(source, destination string) error {
-	sourceObj, err := GetFile(source)
+	sourceObj, err := GetFile(source, 0)
+	statSource, _ := os.Stat(source)
+	sourcePerm := statSource.Mode()
+
 	defer sourceObj.Close()
 
 	if err != nil {
 		return err
 	}
 
-	destinationObj, err := GetFile(destination)
+	destinationObj, err := GetFile(destination, sourcePerm)
 	defer destinationObj.Close()
 
 	if err != nil {

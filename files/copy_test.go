@@ -16,7 +16,7 @@ func TestCopy(t *testing.T) {
 		os.Remove(destPath)
 	})
 
-	sourceObj, _ := GetFile(sourcePath)
+	sourceObj, _ := GetFile(sourcePath, FilePerm)
 	sourceObj.Write(sourceData)
 	sourceObj.Close()
 
@@ -28,7 +28,7 @@ func TestCopy(t *testing.T) {
 
 	buffer := make([]byte, len(sourceData))
 
-	destObj, _ := GetFile(destPath)
+	destObj, _ := GetFile(destPath, FilePerm)
 	destObj.Read(buffer)
 
 	if !slices.Equal(buffer, sourceData) {
