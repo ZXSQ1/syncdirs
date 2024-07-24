@@ -3,6 +3,7 @@ package app
 import (
 	"sync"
 
+	"github.com/ZXSQ1/syncdirs/channels"
 	"github.com/ZXSQ1/syncdirs/files"
 )
 
@@ -54,13 +55,13 @@ func (copier *Copier) Copy(sourceFile, destFile, err chan string, progress chan 
 	var mutex = &sync.Mutex{}
 
 	defer func() {
-		close(sourceFile)
-		close(destFile)
-		close(err)
-		close(progress)
+		channels.Close(sourceFile)
+		channels.Close(destFile)
+		channels.Close(err)
+		channels.Close(progress)
 	}()
 
-	progress <- 0
+	channels.Feed(progress, 0)
 
 	for index, _ := range copier.SourceFiles {
 		sourcePath := copier.SourceFiles[index]
@@ -73,11 +74,17 @@ func (copier *Copier) Copy(sourceFile, destFile, err chan string, progress chan 
 
 			errVal := files.Copy(sourcePath, destPath)
 
+			channels.Feed(sourceFile, sourcePath)
+			channels.Feed(destFile, destPath)
+
 			if errVal != nil {
-				err <- errVal.Error()
+				channels.Feed(err, errVal.Error())
 			} else {
 				mutex.Lock()
-				progress <- <-progress + 1
+
+				progressVal := channels.Unfeed(progress).(int)
+				channels.Feed(progress, progressVal+1)
+
 				mutex.Unlock()
 			}
 		}()
