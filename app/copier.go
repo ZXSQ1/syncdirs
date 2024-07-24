@@ -27,12 +27,16 @@ func NewCopier(sourceFiles, destFiles []string) Copier {
 /*
 description: adds a source destination file pair
 arguments:
-  - sourceFile: the source file path to add
-  - destFile: the dest file path to add
+  - sourceFiles: the source file path to add
+  - destFiles: the dest file path to add
 
 return: no return
 */
 func (copier *Copier) Add(sourceFiles, destFiles []string) {
+	if len(sourceFiles) != len(destFiles) {
+		return
+	}
+
 	copier.SourceFiles = append(copier.SourceFiles, sourceFiles...)
 	copier.DestFiles = append(copier.DestFiles, destFiles...)
 }
