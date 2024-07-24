@@ -32,9 +32,9 @@ arguments:
 
 return: no return
 */
-func (copier *Copier) Add(sourceFile, destFile string) {
-	copier.SourceFiles = append(copier.SourceFiles, sourceFile)
-	copier.DestFiles = append(copier.DestFiles, destFile)
+func (copier *Copier) Add(sourceFiles, destFiles []string) {
+	copier.SourceFiles = append(copier.SourceFiles, sourceFiles...)
+	copier.DestFiles = append(copier.DestFiles, destFiles...)
 }
 
 /*
