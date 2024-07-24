@@ -1,15 +1,16 @@
 package channels
 
 import (
+	"fmt"
 	"testing"
 )
 
 func TestFeed(t *testing.T) {
 	intChan := make(chan int)
 
-	Feed(intChan, 90)
+	go Feed(intChan, 90)
 
-	intChan = nil
+	fmt.Println(<-intChan)
 
-	Feed(intChan, 90)
+	go Feed(nil, 90)
 }
