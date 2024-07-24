@@ -1,6 +1,7 @@
 package app
 
 import (
+	"os"
 	"testing"
 
 	"github.com/ZXSQ1/syncdirs/files"
@@ -18,6 +19,10 @@ func TestCopier(t *testing.T) {
 		"temp1/go",
 		"temp1/ruby",
 	}
+
+	t.Cleanup(func() {
+		os.RemoveAll("temp1")
+	})
 
 	copier := NewCopier(sourceFiles, destFiles)
 	copier.Copy(nil, nil, nil, nil)
