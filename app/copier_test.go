@@ -14,6 +14,11 @@ func TestCopier(t *testing.T) {
 		"temp1/python",
 	}
 
+	for _, path := range sourceFiles {
+		fileObj, _ := files.GetFile(path, files.FilePerm)
+		fileObj.Close()
+	}
+
 	destFiles := []string{
 		"temp1/haskell",
 		"temp1/go",
