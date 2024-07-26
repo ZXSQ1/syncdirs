@@ -82,8 +82,12 @@ func (copier *Copier) Copy(sourceFile, destFile, err chan string, progress chan 
 			} else {
 				mutex.Lock()
 
-				progressVal := channels.Unfeed(progress).(int)
-				channels.Feed(progress, progressVal+1)
+				progressVal := channels.Unfeed(progress)
+				switch progressVal.(type) {
+				case int:
+					progressIntVal := progressVal.(int)
+					channels.Feed(progress, progressIntVal+1)
+				}
 
 				mutex.Unlock()
 			}

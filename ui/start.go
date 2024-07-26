@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"os"
+	"sync"
 
 	"github.com/ZXSQ1/syncdirs/app"
 	"github.com/ZXSQ1/syncdirs/channels"
@@ -22,6 +23,8 @@ arguments:
 return: no return
 */
 func Synchronize(sourceDir, destDir string, sourceFile, destFile, err chan string, progress chan float32) {
+	var waitGroup = &sync.WaitGroup{}
+
 	lister := app.NewLister([]string{sourceDir, destDir})
 	lister.List()
 
@@ -29,12 +32,29 @@ func Synchronize(sourceDir, destDir string, sourceFile, destFile, err chan strin
 	differer.Differ()
 
 	intProgress := make(chan int)
-	copier := app.NewCopier(differer.GetFound(), differer.GetMissing())
-	copier.Copy(sourceFile, destFile, err, intProgress)
 
-	progressVal := float32((channels.Unfeed(intProgress)).(int) * 100 / len(lister.Get(sourceDir)))
-	channels.Feed(progress, progressVal)
+	waitGroup.Add(1)
+	go func() {
+		copier := app.NewCopier(differer.GetFound(), differer.GetMissing())
+		copier.Copy(sourceFile, destFile, err, intProgress)
+		waitGroup.Done()
+	}()
+
+	go func() {
+		for {
+			progressRawVal := channels.Unfeed(intProgress)
+
+			if progressRawVal == nil {
+				return
+			}
+
+			progressVal := float32(progressRawVal.(int) * 100 / len(lister.Get(sourceDir)))
+			channels.Feed(progress, progressVal)
+		}
+	}()
+
 	channels.Close(progress)
+	waitGroup.Wait()
 }
 
 func Start() {
