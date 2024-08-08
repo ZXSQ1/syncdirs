@@ -59,33 +59,3 @@ func (pathDiffererAB *PathDiffererAB) Differ() {
 		}
 	}
 }
-
-/*
-description: gets the missing paths
-arguments: no arguments
-return: the string slice containing the missing paths
-*/
-func (pathDiffererAB *PathDiffererAB) GetMissing() []string {
-	var missingPaths []string
-
-	for missing, _ := range pathDiffererAB.Difference {
-		missingPaths = append(missingPaths, string(missing))
-	}
-
-	return missingPaths
-}
-
-/*
-description: gets the found paths
-arguments: no arguments
-return: the string slice containing the found paths
-*/
-func (pathDiffererAB *PathDiffererAB) GetFound() []string {
-	var foundPaths []string
-
-	for _, found := range pathDiffererAB.Difference {
-		foundPaths = append(foundPaths, string(found))
-	}
-
-	return foundPaths
-}

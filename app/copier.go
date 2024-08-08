@@ -62,29 +62,28 @@ func (copier *Copier) Copy(infoFn func(CopierData)) {
 
 	var progress int
 
-	for index, _ := range copier.SourceFiles {
+	for index := range copier.SourceFiles {
 		sourcePath := copier.SourceFiles[index]
 		destPath := copier.DestFiles[index]
 
 		waitGroup.Add(1)
 
-		go func() {
+		go func(src, dst string) {
 			defer waitGroup.Done()
 
-			errVal := files.Copy(sourcePath, destPath)
-
+			errVal := files.Copy(src, dst)
 			progressMutex.Lock()
 			progress += 1
 
 			infoFn(CopierData{
-				sourcePath,
-				destPath,
+				src,
+				dst,
 				progress,
 				errVal,
 			})
 
 			progressMutex.Unlock()
-		}()
+		}(sourcePath, destPath)
 	}
 
 	waitGroup.Wait()

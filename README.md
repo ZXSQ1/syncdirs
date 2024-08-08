@@ -10,3 +10,4 @@ are not **concurrent**, so they aren't fast.
 ## Installation
 
 Binaries will be found in the releases.
+

@@ -29,11 +29,11 @@ func TestPathDiffererAB(t *testing.T) {
 	differer := NewPathDiffererAB(dir1, dir2, set1, set2)
 	differer.Differ()
 
-	for _, path := range differer.GetFound() {
+	for _, path := range differer.Difference {
 		if !slices.Contains([]string{
 			"temp1/bash", "temp1/python",
 			"temp2/rust", "temp2/go",
-		}, path) {
+		}, string(path)) {
 			t.Fail()
 		}
 	}

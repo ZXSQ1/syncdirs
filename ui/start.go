@@ -16,13 +16,18 @@ func Synchronize(sourceDir, destDir string) {
 	differer := app.NewPathDiffererAB(sourceDir, destDir, lister.Get(sourceDir), lister.Get(destDir))
 	differer.Differ()
 
-	copier := app.NewCopier(differer.GetFound(), differer.GetMissing())
+	copier := app.NewCopier([]string{}, []string{})
+
+	for missing, found := range differer.Difference {
+		copier.Add([]string{string(found)}, []string{string(missing)})
+	}
+
 	copier.Copy(func(cd app.CopierData) {
 		if cd.Err != nil {
 			utils.PrintError("%s. skipping...\n", cd.Err.Error())
 		} else {
 			fmt.Fprintf(os.Stdout, "%-70s -> %-90s (%d left)\n",
-				cd.SourceFile, cd.DestFile, len(differer.GetMissing())-cd.CopiedFiles)
+				cd.SourceFile, cd.DestFile, len(differer.Difference)-cd.CopiedFiles)
 			os.Stdout.Sync()
 		}
 	})
