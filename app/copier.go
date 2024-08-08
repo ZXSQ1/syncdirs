@@ -3,13 +3,19 @@ package app
 import (
 	"sync"
 
-	"github.com/ZXSQ1/syncdirs/channels"
 	"github.com/ZXSQ1/syncdirs/files"
 )
 
 type Copier struct {
 	SourceFiles []string
 	DestFiles   []string
+}
+
+type CopierData struct {
+	SourceFile  string
+	DestFile    string
+	CopiedFiles int
+	Err         error
 }
 
 /*
@@ -50,18 +56,11 @@ arguments:
   - err: the string channel to carry the error file
   - progress: the int channel to carry the current progress
 */
-func (copier *Copier) Copy(sourceFile, destFile, err chan string, progress chan int) {
+func (copier *Copier) Copy(infoFn func(CopierData)) {
 	var waitGroup = &sync.WaitGroup{}
-	var mutex = &sync.Mutex{}
+	var progressMutex = &sync.Mutex{}
 
-	defer func() {
-		channels.Close(sourceFile)
-		channels.Close(destFile)
-		channels.Close(err)
-		channels.Close(progress)
-	}()
-
-	channels.Feed(progress, 0)
+	var progress int
 
 	for index, _ := range copier.SourceFiles {
 		sourcePath := copier.SourceFiles[index]
@@ -74,23 +73,17 @@ func (copier *Copier) Copy(sourceFile, destFile, err chan string, progress chan 
 
 			errVal := files.Copy(sourcePath, destPath)
 
-			channels.Feed(sourceFile, sourcePath)
-			channels.Feed(destFile, destPath)
+			progressMutex.Lock()
+			progress += 1
 
-			if errVal != nil {
-				channels.Feed(err, errVal.Error())
-			} else {
-				mutex.Lock()
+			infoFn(CopierData{
+				sourcePath,
+				destPath,
+				progress,
+				errVal,
+			})
 
-				progressVal := channels.Unfeed(progress)
-				switch progressVal.(type) {
-				case int:
-					progressIntVal := progressVal.(int)
-					channels.Feed(progress, progressIntVal+1)
-				}
-
-				mutex.Unlock()
-			}
+			progressMutex.Unlock()
 		}()
 	}
 

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -30,7 +31,9 @@ func TestCopier(t *testing.T) {
 	})
 
 	copier := NewCopier(sourceFiles, destFiles)
-	copier.Copy(nil, nil, nil, nil)
+	copier.Copy(func(data CopierData) {
+		fmt.Println(data)
+	})
 
 	for _, destFile := range destFiles {
 		if !files.IsExist(destFile) {

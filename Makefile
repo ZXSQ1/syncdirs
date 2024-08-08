@@ -31,10 +31,10 @@ build:
 
 test:
 	$(TEST) files/*.go $(TEST_OPTS)
-	$(TEST) ui/*.go $(TEST_OPTS)
 	$(TEST) utils/*.go $(TEST_OPTS)
 	$(TEST) app/*.go $(TEST_OPTS)
 	$(TEST) channels/*.go $(TEST_OPTS)
+	$(TEST) ui/*.go $(TEST_OPTS)
 
 clean:
 	rm -rf bin/*

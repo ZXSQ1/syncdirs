@@ -6,93 +6,54 @@ import (
 	"sync"
 
 	"github.com/ZXSQ1/syncdirs/app"
-	"github.com/ZXSQ1/syncdirs/channels"
 	"github.com/ZXSQ1/syncdirs/utils"
 )
 
-/*
-description: synchronizes 2 directories
-arguments:
-  - sourceDir: the string path of the source directory
-  - destDir: the string path of the destination directory
-  - sourceFile: the source file string channel
-  - destFile: the destination file string channel
-  - err: the error message string channel
-  - progress: the float32 channel to contain the progress
-
-return: no return
-*/
-func Synchronize(sourceDir, destDir string, sourceFile, destFile, err chan string, progress chan float32) {
-	var waitGroup = &sync.WaitGroup{}
-
+func Synchronize(sourceDir, destDir string) {
 	lister := app.NewLister([]string{sourceDir, destDir})
 	lister.List()
 
 	differer := app.NewPathDiffererAB(sourceDir, destDir, lister.Get(sourceDir), lister.Get(destDir))
 	differer.Differ()
 
-	intProgress := make(chan int)
-
-	waitGroup.Add(1)
-	go func() {
-		copier := app.NewCopier(differer.GetFound(), differer.GetMissing())
-		copier.Copy(sourceFile, destFile, err, intProgress)
-		waitGroup.Done()
-	}()
-
-	go func() {
-		for {
-			progressRawVal := channels.Unfeed(intProgress)
-
-			if progressRawVal == nil {
-				return
-			}
-
-			progressVal := float32(progressRawVal.(int) * 100 / len(lister.Get(sourceDir)))
-			channels.Feed(progress, progressVal)
+	copier := app.NewCopier(differer.GetFound(), differer.GetMissing())
+	copier.Copy(func(cd app.CopierData) {
+		if cd.Err != nil {
+			utils.PrintError("%s. skipping...\n", cd.Err.Error())
+		} else {
+			fmt.Fprintf(os.Stdout, "%-70s -> %-90s (%d left)\n",
+				cd.SourceFile, cd.DestFile, len(differer.GetMissing())-cd.CopiedFiles)
+			os.Stdout.Sync()
 		}
-	}()
+	})
+}
 
-	channels.Close(progress)
+func SynchronizeMultiple(dirs []string) error {
+	switch len(dirs) {
+	case 0, 1:
+		return fmt.Errorf("not enough directories provided")
+	case 2:
+		Synchronize(dirs[0], dirs[1])
+		return nil
+	}
+
+	var waitGroup = &sync.WaitGroup{}
+	centralDir := dirs[0]
+
+	for _, dir := range dirs[1:] {
+		waitGroup.Add(1)
+		go func() {
+			defer waitGroup.Done()
+			Synchronize(centralDir, dir)
+		}()
+	}
+
 	waitGroup.Wait()
+
+	return nil
 }
 
 func Start() {
 	dirs := Handle(os.Args)
-
-	sourceFile, destFile, err, progress := make(chan string), make(chan string), make(chan string), make(chan float32)
-
-	go func() {
-		for {
-			sourcePath := channels.Unfeed(sourceFile).(string)
-			destPath := channels.Unfeed(destFile).(string)
-			progressIndication := channels.Unfeed(progress).(float32)
-
-			fmt.Printf("%s -> %s (%.2f%%)\n", sourcePath, destPath, progressIndication)
-		}
-	}()
-
-	go func() {
-		for {
-			errMsg := channels.Unfeed(err).(string)
-			utils.PrintError(errMsg)
-		}
-	}()
-
-	switch len(dirs) {
-	case 0, 1:
-		utils.PrintError("not enough directories provided")
-		Help()
-	case 2:
-		Synchronize(dirs[0], dirs[1], sourceFile, destFile, err, progress)
-	default:
-		for i := 0; i < 2; i++ {
-			centralDir := dirs[0]
-
-			for _, syncDir := range dirs[1:] {
-				Synchronize(centralDir, syncDir, sourceFile, destFile, err, progress)
-			}
-		}
-	}
-
+	SynchronizeMultiple(dirs)
 }

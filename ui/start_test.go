@@ -5,50 +5,43 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/ZXSQ1/syncdirs/files"
+	"github.com/ZXSQ1/syncdirs/app"
 )
 
 func TestSynchronize(t *testing.T) {
 	dirA := "temp1"
-	dirB := "temp2"
-
 	dirAEntries := []string{
-		"nothing",
-		"everything",
-		"anything",
+		dirA + "/java",
+		dirA + "/bedrock",
+		dirA + "/minecraft",
 	}
 
+	dirB := "temp2"
 	dirBEntries := []string{
-		"good",
-		"bad",
-		"evil",
+		dirB + "/bednorock",
+		dirB + "/nojava",
+		dirB + "/minecraft",
 	}
 
 	t.Cleanup(func() {
-		os.RemoveAll(dirA)
-		os.RemoveAll(dirB)
+		for _, dir := range []string{dirA, dirB} {
+			os.RemoveAll(dir)
+		}
 	})
 
-	for _, path := range dirAEntries {
-		path = dirA + "/" + path
-
-		fileObj, _ := files.GetFile(path, files.FilePerm)
-		fileObj.Close()
+	for _, entries := range [][]string{dirAEntries, dirBEntries} {
+		for _, entry := range entries {
+			fileObj, _ := os.Create(entry)
+			fileObj.Close()
+		}
 	}
 
-	for _, path := range dirBEntries {
-		path = dirB + "/" + path
+	Synchronize(dirA, dirB)
 
-		fileObj, _ := files.GetFile(path, files.FilePerm)
-		fileObj.Close()
-	}
+	lister := app.NewLister([]string{dirA, dirB})
+	lister.List()
 
-	Synchronize(dirA, dirB, nil, nil, nil, nil)
-
-	dirAContents, _ := files.ListDir(dirA, true)
-	dirBContents, _ := files.ListDir(dirB, true)
-
-	if !slices.Equal(dirAContents, dirBContents) {
+	if !slices.Equal(lister.Get(dirA), lister.Get(dirB)) {
 		t.Fail()
 	}
 }

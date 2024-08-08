@@ -33,25 +33,7 @@ func Copy(source, destination string) error {
 		return err
 	}
 
-	buffer := make([]byte, BufferSize)
+	_, err = io.Copy(destinationObj, sourceObj)
 
-	for {
-		nRead, err := sourceObj.Read(buffer)
-
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-
-			return err
-		}
-
-		_, err = destinationObj.Write(buffer[:nRead])
-
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return err
 }
