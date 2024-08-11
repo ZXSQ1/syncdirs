@@ -51,13 +51,14 @@ func (copier *Copier) Add(sourceFiles, destFiles []string) {
 /*
 description: copies the sources to their destinations
 arguments:
-  - sourceFile: the string channel to carry the source file
-  - destFile: the string channel to carry the destination file
-  - err: the string channel to carry the error file
-  - progress: the int channel to carry the current progress
+  - infoFn: the function to print the info and takes a CopierData sturcture.
+  - jobs: the uint value that specifies the number of jobs
+
+return: no return
 */
-func (copier *Copier) Copy(infoFn func(CopierData)) {
+func (copier *Copier) Copy(infoFn func(CopierData), jobs uint) {
 	var waitGroup = &sync.WaitGroup{}
+	var waitGroupCounter uint
 	var progressMutex = &sync.Mutex{}
 
 	var progress int
@@ -67,6 +68,7 @@ func (copier *Copier) Copy(infoFn func(CopierData)) {
 		destPath := copier.DestFiles[index]
 
 		waitGroup.Add(1)
+		waitGroupCounter++
 
 		go func(src, dst string) {
 			defer waitGroup.Done()
@@ -84,6 +86,13 @@ func (copier *Copier) Copy(infoFn func(CopierData)) {
 
 			progressMutex.Unlock()
 		}(sourcePath, destPath)
+
+		if jobs != 0 {
+			if waitGroupCounter == jobs {
+				waitGroupCounter = 0
+				waitGroup.Wait()
+			}
+		}
 	}
 
 	waitGroup.Wait()
