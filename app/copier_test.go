@@ -33,7 +33,7 @@ func TestCopier(t *testing.T) {
 	copier := NewCopier(sourceFiles, destFiles)
 	copier.Copy(func(data CopierData) {
 		fmt.Println(data)
-	})
+	}, 1)
 
 	for _, destFile := range destFiles {
 		if !files.IsExist(destFile) {

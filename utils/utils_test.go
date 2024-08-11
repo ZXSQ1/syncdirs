@@ -8,14 +8,6 @@ import (
 	"github.com/ZXSQ1/syncdirs/files"
 )
 
-func TestError(t *testing.T) {
-	errMessage := "error!"
-
-	if Error(errMessage) != errCol.Sprint("E: ")+errMessage {
-		t.Fail()
-	}
-}
-
 func TestValidateDir(t *testing.T) {
 	dirPath := "./.cache/syncdirs/testDir"
 

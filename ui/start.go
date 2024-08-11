@@ -9,6 +9,11 @@ import (
 	"github.com/ZXSQ1/syncdirs/utils"
 )
 
+var (
+	Jobs    uint
+	Exclude []string
+)
+
 func Synchronize(sourceDir, destDir string) {
 	lister := app.NewLister([]string{sourceDir, destDir})
 	lister.List()
@@ -30,7 +35,7 @@ func Synchronize(sourceDir, destDir string) {
 				cd.SourceFile, cd.DestFile, len(differer.Difference)-cd.CopiedFiles)
 			os.Stdout.Sync()
 		}
-	})
+	}, Jobs)
 }
 
 func SynchronizeMultiple(dirs []string) error {

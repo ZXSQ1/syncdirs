@@ -9,6 +9,7 @@ import (
 )
 
 var errCol = color.New(color.Bold, color.FgRed)
+var infoCol = color.New(color.Bold, color.FgYellow)
 
 /*
 description: formats error message
@@ -22,6 +23,17 @@ func Error(errMsg string) string {
 }
 
 /*
+description: formats info message
+arguments:
+  - infoMsg: the information message to format
+
+return: no return
+*/
+func Info(infoMsg string) string {
+	return infoCol.Sprint("W: ") + infoMsg
+}
+
+/*
 description: prints the formatted error
 arguments:
   - format: the format string passed to Printf
@@ -31,6 +43,18 @@ return: no return
 */
 func PrintError(format string, objs ...any) {
 	fmt.Println(Error(fmt.Sprintf(format, objs...)))
+}
+
+/*
+description: prints the formatted information
+arguments:
+  - format: the format string passed to Printf
+  - objs: the objects to print
+
+return: no return
+*/
+func PrintInfo(format string, objs ...any) {
+	fmt.Println(Info(fmt.Sprintf(format, objs...)))
 }
 
 /*
